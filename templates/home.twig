@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Interior Cleaning</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 0; margin: 0;">
+    <nav style="background-color: #333; color: white; padding: 10px;">
+        <h1 style="margin: 0;">Car Interior Cleaning</h1>
+        <ul style="list-style: none; padding: 0; display: flex; gap: 15px; margin: 10px 0 0;">
+            <li><a href="index.php" style="color: white; text-decoration: none;">Strona główna</a></li>
+            <li><a href="contact.php" style="color: white; text-decoration: none;">Kontakt</a></li>
+            <li><a href="terms.php" style="color: white; text-decoration: none;">Regulamin</a></li>
+        </ul>
+    </nav>
+
+    <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+        {% for section in sections %}
+            <div style="width: 30%;">
+                <button style="width: 100%; background-color: #f0f0f0; padding: 15px; border: 1px solid #ccc; text-align: center; cursor: pointer;" onclick="toggleContent('{{ section.id }}')">
+                    <h3>{{ section.title }}</h3>
+                </button>
+                <div id="{{ section.id }}" style="display: none; background-color: #f9f9f9; padding: 15px; border: 1px solid #ccc; border-top: none;">
+                    <p>{{ section.content }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Weekly Calendar</h1>
+        <button onclick="window.location.href='?week={{ currentWeek - 1 }}'">Previous Week</button>
+        <button onclick="window.location.href='?week={{ currentWeek + 1 }}'">Next Week</button>
+    </div>
+
+    <table border="1" style="width: 100%; text-align: center;">
+        <tr>
+            {% for day in daysOfWeek %}
+                <th style="background-color:#ffb178;">{{ day }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for day in weekDates %}
+                <td>
+                    {{ day.date }}<br>
+                    {% for hour in hours %}
+                        {{ hour }}<br>
+                    {% endfor %}
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <script>
+        function toggleContent(id) {
+            const content = document.getElementById(id);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+        function openReservationModal(date) {
+            const modal = document.getElementById('reservationModal');
+            document.getElementById('reservationDate').value = date;
+            modal.style.display = 'block';
+        }
+        function closeReservationModal() {
+            document.getElementById('reservationModal').style.display = 'none';
+        }
+        document.querySelectorAll('td').forEach(td => {
+            td.addEventListener('click', function () {
+                const date = this.firstChild.textContent.trim();
+                openReservationModal(date);
+            });
+        });
+    </script>
+
+    <div id="reservationModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;">
+        <h2>Rezerwacja</h2>
+        <form method="POST" action="/rezerwacje.php">
+            <label for="name">Imię i nazwisko:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="phone">Nr telefonu:</label><br>
+            <input type="text" id="phone" name="phone" required><br><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+            <label for="reservationDate">Data rezerwacji:</label><br>
+            <input type="text" id="reservationDate" name="reservationDate" readonly><br><br>
+            <button type="submit">Zarezerwuj</button>
+            <button type="button" onclick="closeReservationModal()">Anuluj</button>
+        </form>
+    </div>
+
+    <footer style="background-color: #333; color: white; text-align: center; padding: 10px; margin-top: 20px;">
+        <p>Autor: Praktykant | Copyright 2025</p>
+        <ul style="list-style: none; padding: 0; display: inline-flex; gap: 15px; margin: 0;">
+            <li><a href="index.php" style="color: white; text-decoration: none;">Strona główna</a></li>
+            <li><a href="contact.php" style="color: white; text-decoration: none;">Kontakt</a></li>
+            <li><a href="terms.php" style="color: white; text-decoration: none;">Regulamin</a></li>
+        </ul>
+    </footer>
+</body>
+</html>
