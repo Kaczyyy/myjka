@@ -29,9 +29,10 @@
     </div>
 
     <div>
-        <h1>Weekly Calendar</h1>
-        <button onclick="window.location.href='?week={{ currentWeek - 1 }}'">Previous Week</button>
-        <button onclick="window.location.href='?week={{ currentWeek + 1 }}'">Next Week</button>
+        <h1>Kalendarz</h1>
+        <button onclick="window.location.href='?month={{ currentMonth - 1 }}'">Poprzedni miesiąc</button>
+        <button onclick="window.location.href='?month={{ currentMonth + 1 }}'">Następny miesiąc</button>
+
     </div>
 
     <table border="1" style="width: 100%; text-align: center;">
@@ -40,16 +41,28 @@
                 <th style="background-color:#ffb178;">{{ day }}</th>
             {% endfor %}
         </tr>
-        <tr>
-            {% for day in weekDates %}
-                <td>
-                    {{ day.date }}<br>
-                    {% for hour in hours %}
-                        {{ hour }}<br>
-                    {% endfor %}
-                </td>
-            {% endfor %}
-        </tr>
+<tr>
+    {% for day in weekDates %}
+        <td
+            {% if day.reservedCount >= 2 %}
+                style="background-color: #f88; pointer-events: none;"
+                title="Brak dostępnych terminów"
+            {% else %}
+                onclick="openReservationModal('{{ day.date }}')"
+                style="cursor: pointer;"
+            {% endif %}
+        >
+
+        {{ day.date }}<br>
+        <b>{{ daysOfWeek[day.dayOfWeek - 1] }}</b>
+
+        </td>
+
+        {% if loop.index is divisible by(7) %}
+            </tr><tr>
+        {% endif %}
+    {% endfor %}
+</tr>
     </table>
 
     <script>

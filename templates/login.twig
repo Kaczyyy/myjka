@@ -1,0 +1,9 @@
+<h1>Logowanie administratora</h1>
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+<form method="POST">
+    <label>Login: <input type="text" name="username" required></label><br>
+    <label>Hasło: <input type="password" name="password" required></label><br>
+    <button type="submit">Zaloguj</button>
+</form>
