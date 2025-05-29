@@ -7,17 +7,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $email = $_POST['email'] ?? '';
     $reservationDate = $_POST['reservationDate'] ?? '';
+    $reservationTime = $_POST['reservationTime'] ?? '';
 
     try {
         $pdo = Connect::gConnection();
+        $check = $pdo->prepare("SELECT COUNT(*) FROM rezerwacje WHERE data = :data AND reservation_time = :time");
+        $check->execute([
+            ':data' => $reservationDate,
+            ':time' => $reservationTime
+        ]);
 
-        $stmt = $pdo->prepare('INSERT INTO rezerwacje (data, imie, telefon, email) VALUES (:data, :imie, :telefon, :email)');
+        if ($check->fetchColumn() > 0) {
+            echo "<script>
+                alert('Wybrana godzina ($reservationTime) w dniu $reservationDate jest już zajęta. Wybierz inną godzinę.');
+                window.location.href = './index.php';
+            </script>";
+            exit;
+        }
+        $stmt = $pdo->prepare('INSERT INTO rezerwacje (data, imie, telefon, email, reservation_time) VALUES (:data, :imie, :telefon, :email, :reservation_time)');
 
         $success = $stmt->execute([
             ':data'    => $reservationDate,
             ':imie'    => $name,
             ':telefon' => $phone,
-            ':email'   => $email
+            ':email'   => $email,
+            ':reservation_time' => $reservationTime
         ]);
 
         if ($success) {

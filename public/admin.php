@@ -14,7 +14,6 @@ if (!$login->isLoggedIn()) {
 
 $pdo = Connect::gConnection();
 
-// Usuwanie rezerwacji
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM rezerwacje WHERE id = ?");
     $stmt->execute([$_GET['delete']]);
@@ -22,7 +21,6 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Pobierz rezerwacje
 $stmt = $pdo->query("SELECT * FROM rezerwacje ORDER BY data ASC");
 $reservations = $stmt->fetchAll();
 

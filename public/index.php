@@ -10,7 +10,6 @@ $loader = new FilesystemLoader(__DIR__ . '/../templates');
 $pdo = Connect::gConnection();
 
 
-//DUMP ZAMIAST $twig = new Environment($loader);
 
 use Twig\Extension\DebugExtension;
 
@@ -51,7 +50,7 @@ foreach ($period as $date) {
     $weekDates[] = ['date' => $date->format('Y-m-d')];
 }
 $daysOfWeek = ['Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota','Niedziela'];
-//DO CZERWONEGO
+
 $weekDatesFull = [];
 
 foreach ($weekDates as $day) {
@@ -69,12 +68,25 @@ foreach ($weekDates as $day) {
         'dayOfWeek' => $dayOfWeek
     ];
 }
+
+$stmt = $pdo->query("SELECT data, reservation_time FROM rezerwacje");
+
+$reservations = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $date = $row['data'];
+    $time = $row['reservation_time'];
+    if (!isset($reservations[$date])) {
+        $reservations[$date] = [];
+    }
+    $reservations[$date][] = $time;
+}
 echo $twig->render('home.twig', [
     'weekDates' => $weekDatesFull,
     'daysOfWeek' => $daysOfWeek,
     'sections' => $sections,
     'currentMonth' => $currentMonth,
     'firstDayOfWeek' => $firstDayOfWeek,
+    'reservedTimesByDate' => $reservations
 ]);
 
 

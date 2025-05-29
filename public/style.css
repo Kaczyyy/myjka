@@ -1,0 +1,140 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.nav {
+    background-color: #ff7043;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.nav h1 {
+    margin: 0;
+}
+
+.nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+    margin: 10px 0 0;
+    justify-content: center;
+}
+
+.nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.section-wrapper {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.section {
+    width: 30%;
+}
+
+.section button {
+    width: 100%;
+    background-color: #f0f0f0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+
+.section-content {
+    display: none;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.calendar-nav {
+    text-align: center;
+    margin: 20px;
+}
+
+.calendar-nav button {
+    font-style: italic;
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #ffa726;
+    border: none;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendar-nav button:hover {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.calendar {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.calendar th {
+    background-color: #5bc0de;
+    padding: 10px;
+}
+
+.calendar td {
+    cursor: pointer;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.calendar td.unavailable {
+    background-color: #f88;
+    pointer-events: none;
+}
+
+.calendar td.monday,
+.calendar td.wednesday,
+.calendar td.friday,
+.calendar td.sunday {
+    background-color: #f2f2f2;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    z-index: 1000;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+    display: inline-flex;
+    gap: 15px;
+    margin: 0;
+}
+
+.footer ul li a {
+    color: white;
+    text-decoration: none;
+}

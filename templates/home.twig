@@ -4,111 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Interior Cleaning</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="font-family: Arial, sans-serif; padding: 0; margin: 0;">
-    <nav style="background-color: #333; color: white; padding: 10px;">
-        <h1 style="margin: 0;">Car Interior Cleaning</h1>
-        <ul style="list-style: none; padding: 0; display: flex; gap: 15px; margin: 10px 0 0;">
-            <li><a href="index.php" style="color: white; text-decoration: none;">Strona główna</a></li>
-            <li><a href="contact.php" style="color: white; text-decoration: none;">Kontakt</a></li>
-            <li><a href="terms.php" style="color: white; text-decoration: none;">Regulamin</a></li>
-        </ul>
-    </nav>
+<body>
+<nav class="nav">
+    <h1>Car Interior Cleaning</h1>
+    <ul>
+        <li><a href="index.php">Strona główna</a></li>
+        <li><a href="contact.php">Kontakt</a></li>
+        <li><a href="terms.php">Regulamin</a></li>
+    </ul>
+</nav>
 
-    <div style="display: flex; justify-content: space-around; margin: 20px 0;">
-        {% for section in sections %}
-            <div style="width: 30%;">
-                <button style="width: 100%; background-color: #f0f0f0; padding: 15px; border: 1px solid #ccc; text-align: center; cursor: pointer;" onclick="toggleContent('{{ section.id }}')">
-                    <h3>{{ section.title }}</h3>
-                </button>
-                <div id="{{ section.id }}" style="display: none; background-color: #f9f9f9; padding: 15px; border: 1px solid #ccc; border-top: none;">
-                    <p>{{ section.content }}</p>
-                </div>
+<div class="section-wrapper">
+    {% for section in sections %}
+        <div class="section">
+            <button onclick="toggleContent('{{ section.id }}')">
+                <h3>{{ section.title }}</h3>
+            </button>
+            <div id="{{ section.id }}" class="section-content">
+                <p>{{ section.content }}</p>
             </div>
-        {% endfor %}
-    </div>
-
-    <div>
-        <h1>Kalendarz</h1>
-        <button onclick="window.location.href='?month={{ currentMonth - 1 }}'">Poprzedni miesiąc</button>
-        <button onclick="window.location.href='?month={{ currentMonth + 1 }}'">Następny miesiąc</button>
-
-    </div>
-
-    <table border="1" style="width: 100%; text-align: center;">
-        <tr>
-            {% for day in daysOfWeek %}
-                <th style="background-color:#ffb178;">{{ day }}</th>
-            {% endfor %}
-        </tr>
-<tr>
-    {% for day in weekDates %}
-        <td
-            {% if day.reservedCount >= 2 %}
-                style="background-color: #f88; pointer-events: none;"
-                title="Brak dostępnych terminów"
-            {% else %}
-                onclick="openReservationModal('{{ day.date }}')"
-                style="cursor: pointer;"
-            {% endif %}
-        >
-
-        {{ day.date }}<br>
-        <b>{{ daysOfWeek[day.dayOfWeek - 1] }}</b>
-
-        </td>
-
-        {% if loop.index is divisible by(7) %}
-            </tr><tr>
-        {% endif %}
+        </div>
     {% endfor %}
-</tr>
-    </table>
+</div>
 
-    <script>
-        function toggleContent(id) {
-            const content = document.getElementById(id);
-            content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        }
-        function openReservationModal(date) {
-            const modal = document.getElementById('reservationModal');
-            document.getElementById('reservationDate').value = date;
-            modal.style.display = 'block';
-        }
-        function closeReservationModal() {
-            document.getElementById('reservationModal').style.display = 'none';
-        }
-        document.querySelectorAll('td').forEach(td => {
-            td.addEventListener('click', function () {
-                const date = this.firstChild.textContent.trim();
-                openReservationModal(date);
-            });
+<div class="calendar-nav">
+    <h1>Kalendarz</h1>
+    <button onclick="window.location.href='?month={{ currentMonth - 1 }}'">Poprzedni miesiąc</button>
+    <button onclick="window.location.href='?month={{ currentMonth + 1 }}'">Następny miesiąc</button>
+</div>
+
+<table class="calendar">
+    <tr>
+        {% for day in daysOfWeek %}
+            <th>{{ day }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for i in 1..(firstDayOfWeek - 1) %}<td></td>{% endfor %}
+        {% set totalIndex = firstDayOfWeek - 1 %}
+        {% for day in weekDates %}
+            <td class="{% if day.reservedCount >= 2 %}unavailable{% endif %}" {% if day.reservedCount < 2 %}onclick="openReservationModal('{{ day.date }}')"{% endif %}>
+                {{ day.date }}<br>
+                <b>{{ daysOfWeek[day.dayOfWeek - 1] }}</b>
+            </td>
+            {% set totalIndex = totalIndex + 1 %}
+            {% if totalIndex is divisible by(7) %}</tr><tr>{% endif %}
+        {% endfor %}
+    </tr>
+</table>
+
+<div id="reservationModal" class="modal">
+    <h2>Rezerwacja</h2>
+    <form method="POST" action="/rezerwacje.php">
+        <label for="name">Imię i nazwisko:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="phone">Nr telefonu:</label><br>
+        <input type="text" id="phone" name="phone" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="reservationDate">Data rezerwacji:</label><br>
+        <input type="text" id="reservationDate" name="reservationDate" readonly onchange="fetchAvailableHours(this.value)"><br><br>
+
+        <label for="reservationTime">Godzina:</label><br>
+        <select id="reservationTime" name="reservationTime" required>
+            <option value="">Wybierz godzinę</option>
+        </select><br><br>
+
+        <button type="submit">Zarezerwuj</button>
+        <button type="button" onclick="closeReservationModal()">Anuluj</button>
+    </form>
+</div>
+
+<footer class="footer">
+    <p>Autor: Praktykant | Copyright 2025</p>
+    <ul>
+        <li><a href="index.php">Strona główna</a></li>
+        <li><a href="contact.php">Kontakt</a></li>
+        <li><a href="terms.php">Regulamin</a></li>
+    </ul>
+</footer>
+
+<script>
+    const reservedTimesByDate = {{ reservedTimesByDate|json_encode|raw }};
+
+    function toggleContent(id) {
+        const content = document.getElementById(id);
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function openReservationModal(date) {
+        const modal = document.getElementById('reservationModal');
+        document.getElementById('reservationDate').value = date;
+
+        const select = document.getElementById('reservationTime');
+        const reservedTimes = reservedTimesByDate[date] || [];
+        const allTimes = ['08:00', '12:00'];
+
+        select.innerHTML = '';
+
+        const availableTimes = allTimes.filter(time => !reservedTimes.includes(time));
+        availableTimes.forEach(time => {
+            const option = document.createElement('option');
+            option.value = time;
+            option.textContent = time;
+            select.appendChild(option);
         });
-    </script>
 
-    <div id="reservationModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;">
-        <h2>Rezerwacja</h2>
-        <form method="POST" action="/rezerwacje.php">
-            <label for="name">Imię i nazwisko:</label><br>
-            <input type="text" id="name" name="name" required><br><br>
-            <label for="phone">Nr telefonu:</label><br>
-            <input type="text" id="phone" name="phone" required><br><br>
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
-            <label for="reservationDate">Data rezerwacji:</label><br>
-            <input type="text" id="reservationDate" name="reservationDate" readonly><br><br>
-            <button type="submit">Zarezerwuj</button>
-            <button type="button" onclick="closeReservationModal()">Anuluj</button>
-        </form>
-    </div>
+        if (availableTimes.length === 0) {
+            const option = document.createElement('option');
+            option.text = 'Brak dostępnych godzin';
+            option.disabled = true;
+            select.appendChild(option);
+        }
 
-    <footer style="background-color: #333; color: white; text-align: center; padding: 10px; margin-top: 20px;">
-        <p>Autor: Praktykant | Copyright 2025</p>
-        <ul style="list-style: none; padding: 0; display: inline-flex; gap: 15px; margin: 0;">
-            <li><a href="index.php" style="color: white; text-decoration: none;">Strona główna</a></li>
-            <li><a href="contact.php" style="color: white; text-decoration: none;">Kontakt</a></li>
-            <li><a href="terms.php" style="color: white; text-decoration: none;">Regulamin</a></li>
-        </ul>
-    </footer>
+        modal.style.display = 'block';
+    }
+
+    function closeReservationModal() {
+        document.getElementById('reservationModal').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
